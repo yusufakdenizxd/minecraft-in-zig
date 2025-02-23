@@ -7,7 +7,7 @@ pub fn main() !void {
     const screenWidth = 800;
     const screenHeight = 450;
 
-    rl.initWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
+    rl.initWindow(screenWidth, screenHeight, "Minecraft In Zig");
     defer rl.closeWindow();
 
     rl.setTargetFPS(60);
