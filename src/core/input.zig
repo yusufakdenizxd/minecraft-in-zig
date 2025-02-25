@@ -1,8 +1,9 @@
 const rl = @import("raylib");
 const std = @import("std");
+const game = @import("game.zig");
 const keybindings = @import("keybinding.zig");
 
-pub fn inputHandle() void {
+pub fn inputHandle(state: *game.GameState) void {
     if (rl.isKeyPressed(keybindings.moveForward)) {
         std.debug.print("moveForward\n", .{});
     }

@@ -1,6 +1,6 @@
 const rl = @import("raylib");
 const std = @import("std");
-const p = @import("player.zig");
+pub const GameState = @import("game_state.zig");
 const input = @import("input.zig");
 
 pub fn main() !void {
@@ -10,45 +10,36 @@ pub fn main() !void {
     rl.initWindow(screenWidth, screenHeight, "Minecraft In Zig");
     defer rl.closeWindow();
 
+    const allocator = std.heap.page_allocator;
+
     rl.setTargetFPS(60);
 
-    var gameState = initGameState();
-    const mesh = rl.genMeshCube(1, 1, 1);
-
-    const model = try rl.loadModelFromMesh(mesh);
-
-    const mapPosition = rl.Vector3{ .x = -8.0, .y = 0.0, .z = -8.0 };
+    const gameState = try GameState.init(allocator);
+    defer gameState.deinit(allocator);
 
     while (!rl.windowShouldClose()) {
-        rl.updateCamera(&gameState.player.camera, rl.CameraMode.orbital);
-        rl.beginDrawing();
-
-        rl.clearBackground(rl.Color.ray_white);
-        rl.beginMode3D(gameState.player.camera);
-        rl.drawModel(model, mapPosition, 1, rl.Color.red);
-        rl.drawGrid(20, 1.0);
-        rl.endMode3D();
-        rl.drawFPS(10, 10);
-
-        rl.endDrawing();
-
         mainLoop(gameState);
     }
-    rl.unloadModel(model);
-
+    // rl.unloadModel(model);
     rl.closeWindow();
 }
 
-pub const GameState = struct {
-    player: p.Player,
-};
+pub fn mainLoop(state: *GameState) void {
+    input.inputHandle(state);
+    rl.beginDrawing();
 
-pub fn initGameState() GameState {
-    const player = p.initPlayer();
-    return GameState{ .player = player };
-}
+    rl.clearBackground(rl.Color.ray_white);
 
-pub fn mainLoop(state: GameState) void {
-    _ = state;
-    input.inputHandle();
+    rl.beginMode3D(state.camera.*);
+
+    rl.drawCube(rl.Vector3.init(0, 0, 0), 2, 2, 2, rl.Color.red);
+    rl.drawCube(rl.Vector3.init(10, 0, 0), 2, 2, 2, rl.Color.blue);
+    rl.drawCube(rl.Vector3.init(10, 0, 10), 2, 2, 2, rl.Color.orange);
+    rl.drawCube(rl.Vector3.init(10, 10, 10), 2, 2, 2, rl.Color.green);
+    rl.drawCube(rl.Vector3.init(-10, 10, 10), 2, 2, 2, rl.Color.yellow);
+    rl.drawGrid(10, 1);
+
+    rl.endMode3D();
+
+    rl.endDrawing();
 }
