@@ -14,6 +14,8 @@ pub fn main() !void {
 
     rl.setTargetFPS(60);
 
+    rl.hideCursor();
+
     const gameState = try GameState.init(allocator);
     defer gameState.deinit(allocator);
 
